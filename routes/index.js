@@ -424,6 +424,40 @@ router.post("/device/control/:deviceid", function (req, res, next) {
   });
   //res.render("index", { title: "Express" });
 });
+router.post("/device/controlrelay/:deviceid", function (req, res, next) {
+  const { deviceid } = req.params;
+  const {
+    relay1,
+    relay2,
+  } = req.body;
+  pool.connect((err, client, done) => {
+    if (err) {
+      return console.error("error fetching client from pool", err);
+    }
+    const text =
+      "UPDATE devices SET relay1= " +
+      relay1 +
+      ", relay2= " +
+      relay2 +
+      " WHERE deviceid=" +
+      deviceid;
+    console.log(text);
+    client.query(text, (err, result) => {
+      done();
+      //console.log(text);
+      if (err) {
+        res.end();
+        return console.log("error runing query", err);
+      } else {
+        res.json({
+          result: "ok",
+          message: "update new todos successfully",
+        });
+      }
+    });
+  });
+  //res.render("index", { title: "Express" });
+});
 module.exports = router;
 
 //https://ctrlsensors-api.herokuapp.com/data/new/:deviceid : lấy dữ liệu cảm biến mới nhất của một thiết bị          GET
